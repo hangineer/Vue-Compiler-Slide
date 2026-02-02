@@ -456,6 +456,7 @@ level: 2
 <v-clicks>
 
 1. **正規表達式 (Regex)**：其實就是一個狀態機，用來檢查字串是否符合規則
+<!-- 當在寫正規的時候，其實就是在寫一個有限自動狀態機 -->
 
 2. **編譯器 (Compiler) 與 解析器 (Parser)**
 
@@ -538,7 +539,10 @@ transition: slide-up
 level: 2
 ---
 
-TestTestTest
+解析 HTML 和產生 Token 的過程是有規範可遵循的。在 WHATWG 發布的關於瀏覽器解析 HTML 的規格中，說明了[狀態遷移](https://html.spec.whatwg.org/#data-state)
+<img class="mt-4" src="/assets/images/data-state.png" alt="" width="480" height="450" />
+
+<!-- 在「初始狀態」(Data State)下，當遇到字元 < 時，狀 狀態機會遷移到 tag open state，即「標籤開始狀態」。如果遇到字符 < 以外的字符，規範中也都有對應的說明，應該讓狀態機遷移到怎樣的 狀態 -->
 
 
 
@@ -546,19 +550,436 @@ TestTestTest
 transition: slide-up
 level: 2
 ---
+
+有限狀態自動機可以幫助我們完成對模板的「標記化(tokenized)」
+<!-- 點一下：第二段（執行結果）會出現在下方，兩段同時存在 -->
+[codepen](https://codepen.io/hangineer/pen/emzrgyv)
+<div class="max-h-[270px] overflow-y-auto">
+
+```js {*}{lines:true}
+// 定義狀態機的狀態
+const State = {
+    initial: 1,    // 初始狀態
+    tagOpen: 2,    // 標籤開始狀態
+    tagName: 3,    // 標籤名稱狀態
+    text: 4,       // 文本狀態
+    tagEnd: 5,     // 結束標籤狀態
+    tagEndName: 6  // 結束標籤名稱狀態
+}
+
+// 一個輔助函式，用於判斷是否是字母
+function isAlpha(char) {
+    return char >= 'a' && char <= 'z' || char >= 'A' && char <= 'Z'
+}
+
+// 接收模板字串作為參數，並將模板切割為 Token 返回
+function tokenize(str) {
+  // 狀態機的當前狀態：初始狀態
+  let currentState = State.initial
+  // 用於緩存字元
+  const chars = []
+  // 生成的 Token 會存儲到 tokens 陣列中，並作為函式的回傳值
+  const tokens = []
+  // 使用 while 迴圈開啟自動機，只要模板字串沒有讀完，自動機就會一直運行
+  while(str) {
+    const char = str[0]
+    switch (currentState) {
+      // 狀態機當前處於初始狀態
+      case State.initial:
+        // 遇到字元 <
+        if (char === '<') {
+          // 1. 狀態機切換到標籤開始狀態
+          currentState = State.tagOpen
+          // 2. 更新當前字元 <
+          str = str.slice(1)
+        } else if (isAlpha(char)) {
+          // 1. 遇到字母，切換到文本狀態
+          currentState = State.text
+          // 2. 將當前字母緩存到 chars 陣列
+          chars.push(char)
+          // 3. 更新當前字元
+          str = str.slice(1)
+        }
+        break
+      // 狀態機當前處於標籤開始狀態
+      case State.tagOpen:
+        if (isAlpha(char)) {
+          // 1. 遇到字母，切換到標籤名稱狀態
+          currentState = State.tagName
+          // 2. 將當前字元緩存到 chars 陣列
+          chars.push(char)
+          // 3. 更新當前字元
+          str = str.slice(1)
+        } else if (char === '/') {
+            // 1. 遇到字元 /，切換到結束標籤狀態
+            currentState = State.tagEnd
+            // 2. 更新當前字元 /
+            str = str.slice(1)
+        }
+        break
+      // 狀態機當前處於標籤名稱狀態
+      case State.tagName:
+        if (isAlpha(char)) {
+          // 1. 遇到字母，由於當前處於標籤名稱狀態，所以不需要切換狀態，
+          // 但需要將當前字元緩存到 chars 陣列
+          chars.push(char)
+          // 2. 更新當前字元
+          str = str.slice(1)
+        } else if (char === '>') {
+          // 1. 遇到字元 >，切換到初始狀態
+          currentState = State.initial
+          // 2. 同時創建一個標籤 Token，並添加到 tokens 陣列中
+          // 注意，此時 chars 陣列中緩存的字元就是標籤名稱
+          tokens.push({
+              type: 'tag',
+              name: chars.join('')
+          })
+          // 3. chars 陣列的內容已經被紀錄，清空它
+          chars.length = 0
+          // 4. 同時更新當前字元 >
+          str = str.slice(1)
+        }
+        break
+        // 狀態機當前處於文本狀態
+        case State.text:
+          if (isAlpha(char)) {
+            // 1. 遇到字母，保持狀態不變，但應該將當前字元緩存到 chars 陣列
+            chars.push(char)
+            // 2. 更新當前字元
+            str = str.slice(1)
+          } else if (char === '<') {
+            // 1. 遇到字元 <，切換到標籤開始狀態
+            currentState = State.tagOpen
+            // 2. 從 文本狀態 --> 標籤開始狀態，此時應該創建文本 Token，並添加到 tokens 陣列
+            // 注意，此時 chars 陣列中的字元就是文本內容
+            tokens.push({
+                type: 'text',
+                content: chars.join('')
+            })
+            // 3. chars 陣列的內容已經被紀錄，清空它
+            chars.length = 0
+            // 4. 更新當前字元
+            str = str.slice(1)
+          }
+        break
+        // 狀態機當前處於標籤結束狀態
+        case State.tagEnd:
+          if (isAlpha(char)) {
+            // 1. 遇到字母，切換到結束標籤名稱狀態
+            currentState = State.tagEndName
+            // 2. 將當前字元緩存到 chars 陣列
+            chars.push(char)
+            // 3.更新當前字元
+            str = str.slice(1)
+          }
+        break
+        // 狀態機當前處於結束標籤名稱狀態
+        case State.tagEndName:
+          if (isAlpha(char)) {
+            // 1. 遇到字母，不需要切換狀態，但需要將當前字元緩存到 chars 陣列
+            chars.push(char)
+            // 2. 更新當前字元
+            str = str.slice(1)
+          } else if (char === '>') {
+            // 1. 遇到字元 >，切換到初始狀態
+            currentState = State.initial
+            // 2. 從 結束標籤名稱狀態 --> 初始狀態，應該保存結束標籤名稱 Token
+            // 注意，此時 chars 陣列中緩存的內容就是標籤名稱
+            tokens.push({
+                type: 'tagEnd',
+                name: chars.join('')
+            })
+            // 3. chars 陣列的內容已經被紀錄，清空它
+            chars.length = 0
+            // 4. 更新當前字元
+            str = str.slice(1)
+          }
+        break
+    }
+  }
+  return tokens
+}
+```
+
+</div>
+
+<div v-click class="mt-4">
+
+```js {*}{lines:true}
+const tokens = tokenize(`<p>Vue</p>`)
+// [
+//   { type: 'tag', name: 'p' },   // 開始標籤
+//   { type: 'text', content: 'Vue' }, // 文本節點
+//   { type: 'tagEnd', name: 'p' } // 結束標籤
+// ]
+```
+
+</div>
+
+
+<!-- 我們並非總是需要所有 Token。例如，在解析模板的過程中，結束標籤 Token 可以 省略。有時我們可能需要更多的 Token，這取決於具體的需求
+總而言之，透過有限自動機，我們能夠將模板解析為一個個 Token，進而可以用它們建構一棵 AST 了。但在具體建構 AST 之前， 我們需要思考能否簡化 tokenize 函數的程式碼。實際上，我們可以通 過正規表示式來精簡 tokenize 函數的程式碼。上文之所以沒有從最開 -->
+
+
+---
+transition: slide-up
+level: 2
+---
+
+
 
 # 15.3 構造 AST
-<!-- TODO: 這邊要確認一下 -->
+
 學習重點：
 - 如何將 Token 列表轉換為樹狀結構的模板 AST
-- 認識遞迴下降演算法 Recursive Descent
+
+
+<br />
+
+不同用途的編譯器之間可能會有非常大的差異。唯一的共同點是，都會將「原始碼」→「目標程式碼」
+
+- JavaScript 等腳本語言：構造 AST 常用遞迴下降演算法，需處理運算子優先級等問題
+- Vue.js 模板 DSL：DSL 不要求圖靈完備，只需滿足特定場景；通用用途語言(GPL) 可實作 DSL
+- Vue 模板建 AST 較簡單：HTML 標籤格式固定、天然嵌套成父子關係，對應的 AST 與 HTML 結構相似
+
+P.S 圖靈完備：簡單來說，能愈來寫各種程式邏輯的語言就是圖靈完備
+
+
+<!-- 編譯器共通點是「原始碼 → 目標程式碼」；Vue 模板因 HTML 標籤嵌套固定， AST 建構比一般程式語言簡單 -->
 
 ---
 transition: slide-up
 level: 2
 ---
 
-# 15.4 AST 的轉換與插件化架構*
+HTML 是一種標記語言，格式非常固定。 因此，HTML 的 AST 將擁有與 HTML 標籤非常類似的崁套結構
+
+```html {*}{lines:true}
+<div>
+  <p>Vue</p>
+  <p>Template</p>
+</div>
+```
+<div class="max-h-[340px] overflow-y-auto">
+```js {*}{lines:true}
+const ast = {
+  type: 'Root', // 根節點 
+  children: [
+    {
+      type: 'Element',
+      tag: 'div',
+      children: [
+        {
+          type: 'Element',
+          tag: 'p', // 第一個子節點
+          children: [
+            {
+              type: 'Text',
+              content: 'Vue'
+            }
+          ]
+        },
+        {
+          type: 'Element',
+          tag: 'p', // 第二個子節點
+          children: [
+            {
+              type: 'Text',
+              content: 'Template'
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+</div>
+
+
+---
+transition: slide-up
+level: 2
+---
+
+了解了 AST 的結構，接下來是使用 Token 構造出一棵 AST
+
+<!-- tokenize 函數 -->
+拿上一節的 tokenize 函數來用
+
+```js {*}{lines:true}
+const tokens = tokenize(`<div><p>Vue</p><p>Template</p></div>`)
+```
+
+會得到如下的結果
+```js {*}{lines:true}
+const tokens = [
+  { type: "tag", name: "div" },
+  { type: "tag", name: "p" },
+  { type: "text", content: "Vue" },
+  { type: "tagEnd", name: "p" },
+  { type: "tag", name: "p" },
+  { type: "text", content: "Template" },
+  { type: "tagEnd", name: "p" },
+  { type: "tagEnd", name: "div" }
+]
+```
+
+
+
+我們需要處理每個 tokens，在這個過程中，需要建立一個堆疊 `elementStack`，用於維護元素間的父子關係。每遇到一個「開始標籤」節點，就會建立一個 Element 的 AST 節點，並將其寫入堆疊中。遇到一個「結束標籤」節點，就會彈出目前棧頂的節點
+
+---
+transition: slide-up
+level: 2
+---
+
+
+<!-- 這樣，棧頂的節點 = 父節點。掃描過程 中遇到的所有節點，都會作為目前棧頂節點的子節點，並加入到棧頂 節點的 children 屬性下。 -->
+
+# elementStack 與 AST 建構過程
+
+<div class="grid grid-cols-3 gap-6 text-xs mt-4">
+
+<div>
+<div class="text-center font-bold mb-3 text-base">↓ 掃描 Token</div>
+<div class="space-y-1.5 font-mono text-xs">
+  <div v-click class="px-2 py-1 border-2 border-dashed border-gray-400 rounded text-center bg-amber-500/10">開始標籤(div)</div>
+  <div v-click class="px-2 py-1 border-2 border-dashed border-gray-400 rounded text-center bg-amber-500/10">開始標籤(p)</div>
+  <div v-click class="px-2 py-1 border-2 border-dashed border-gray-400 rounded text-center bg-amber-500/10">文本(Vue)</div>
+  <div v-click class="px-2 py-1 border-2 border-dashed border-gray-400 rounded text-center bg-amber-500/10">結束標籤(p)</div>
+  <div v-click class="px-2 py-1 border-2 border-dashed border-gray-400 rounded text-center bg-amber-500/10">開始標籤(p)</div>
+  <div v-click class="px-2 py-1 border-2 border-dashed border-gray-400 rounded text-center bg-amber-500/10">文本(Template)</div>
+  <div v-click class="px-2 py-1 border-2 border-dashed border-gray-400 rounded text-center bg-amber-500/10">結束標籤(p)</div>
+  <div v-click class="px-2 py-1 border-2 border-dashed border-gray-400 rounded text-center bg-amber-500/10">結束標籤(div)</div>
+</div>
+</div>
+
+<div>
+<div class="text-center font-bold mb-3 text-base">elementStack</div>
+<div class="flex flex-col items-center">
+<div class="w-36 h-64 border-2 border-dashed border-cyan-500/50 flex flex-col-reverse items-center pb-3 px-3">
+  <div class="w-full text-center py-1.5 bg-gray-700 rounded-full text-white text-xs mt-1.5">Root</div>
+  <div v-if="$clicks >= 1 && $clicks <= 7" class="w-full text-center py-1.5 bg-cyan-600 rounded-full text-white text-xs mt-1.5">div</div>
+  <div v-if="$clicks >= 2 && $clicks <= 3" class="w-full text-center py-1.5 bg-cyan-500 rounded-full text-white text-xs mt-1.5">p</div>
+  <div v-if="$clicks >= 5 && $clicks <= 6" class="w-full text-center py-1.5 bg-cyan-500 rounded-full text-white text-xs mt-1.5">p</div>
+</div>
+</div>
+</div>
+
+<div>
+<div class="text-center font-bold mb-3 text-base">AST</div>
+<div class="flex justify-center">
+<div class="font-mono" style="font-size: 10px;">
+  <div class="flex flex-col items-center">
+    <div class="px-2 py-1 bg-gray-700 rounded-full text-white">Root</div>
+    <div v-click="1" class="w-0.5 h-3 bg-gray-400"></div>
+    <div v-click="1" class="px-2 py-1 bg-gray-600 rounded-full text-white">Element(div)</div>
+    <div v-click="2" class="w-0.5 h-2 bg-gray-400"></div>
+    <div v-click="2" class="flex gap-4">
+      <div class="flex flex-col items-center">
+        <div class="px-2 py-1 bg-gray-600 rounded-full text-white">Element(p)</div>
+        <div v-click="3" class="w-0.5 h-2 bg-gray-400"></div>
+        <div v-click="3" class="px-2 py-1 bg-gray-500 rounded-full text-white">Text(Vue)</div>
+      </div>
+      <div v-click="5" class="flex flex-col items-center">
+        <div class="px-2 py-1 bg-gray-600 rounded-full text-white">Element(p)</div>
+        <div v-click="6" class="w-0.5 h-2 bg-gray-400"></div>
+        <div v-click="6" class="px-2 py-1 bg-gray-500 rounded-full text-white">Text(Template)</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+</div>
+
+<div v-click class="mt-10 text-center text-xs opacity-70">
+💡 開始標籤 → push 進堆疊；結束標籤 → pop 出堆疊；文本 → 掛到棧頂的 children
+</div>
+
+
+
+---
+transition: slide-up
+level: 2
+---
+掃描 Token 清單並建構 AST 的具體實作如下:
+
+[codepen](https://codepen.io/hangineer/pen/YPWLZaP)
+
+<div class="max-h-[400px] overflow-y-auto">
+
+```js {*}{lines:true}
+// parse 函式接收模板作為參數
+function parse(str) {
+  // 首先對模板進行標記化，得到 tokens
+  const tokens = tokenize(str)
+
+  // 創建 Root 根節點
+  const root = {
+    type: 'Root',
+    children: []
+  }
+
+  // 創建 elementStack 堆疊，起初只有 Root 根節點
+  const elementStack = [root]
+
+  // 開啟一個 while 迴圈掃描 tokens，直到所有 Token 都被掃描完畢為止
+  while (tokens.length) {
+    // 獲取當前堆疊頂端節點作為父節點 parent
+    const parent = elementStack[elementStack.length - 1]
+    // 當前掃描的 Token
+    const t = tokens[0]
+
+    switch (t.type) {
+      case 'tag':
+        // 如果當前 Token 是開始標籤，則創建 Element 類型的 AST 節點
+        const elementNode = {
+          type: 'Element',
+          tag: t.name,
+          children: []
+        }
+        // 將其添加到父級節點的 children 中
+        parent.children.push(elementNode)
+        // 將當前節點壓入堆疊
+        elementStack.push(elementNode)
+        break
+      case 'text':
+        // 如果當前 Token 是文本，則創建 Text 類型的 AST 節點
+        const textNode = {
+          type: 'Text',
+          content: t.content
+        }
+        // 將其添加到父節點的 children 中
+        parent.children.push(textNode)
+        break
+      case 'tagEnd':
+        // 遇到結束標籤，將堆疊頂端節點彈出
+        elementStack.pop()
+        break
+    }
+    // 消費已經掃描過的 token
+    tokens.shift()
+  }
+
+  // 最後返回 AST
+  return root
+}
+```
+
+</div>
+
+<!-- 目前的實作仍然存在諸多問題，例如無法處理自閉合標籤等。這些問題會在第 16 章詳細講解 -->
+
+
+---
+transition: slide-up
+level: 2
+---
+
+# 15.4 AST 的轉換與插件化架構
 學習重點：
 - 
 
@@ -763,6 +1184,7 @@ foo: bar
 dragPos:
   square: 691,32,167,_,-16
 ---
+
 <!-- 當作參考，先留下 -->
 # Draggable Elements
 
@@ -803,7 +1225,10 @@ Double-click on the draggable elements to edit their positions.
 
 <v-drag-arrow pos="67,452,253,46" two-way op70 />
 
-<!-- 當作參考，先留下 -->
+<!--
+當作參考，先留下
+-->
+
 ---
 src: ./pages/imported-slides.md
 hide: false
