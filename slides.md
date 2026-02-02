@@ -981,10 +981,296 @@ level: 2
 
 # 15.4 AST 的轉換與插件化架構
 學習重點：
-- 
+- 關於 AST 的轉換
+- 如何對 AST 進行新增、刪除、修改、查詢
+
+---
+transition: slide-up
+level: 2
+---
+
+
+## 15.4.1 節點的訪問
+
+<img class="mt-4" src="/assets/images/AST-transfer.png" alt="" width="440" height="450" />
+
+
+為了對 AST 進行轉換，我們需要存取 AST 的每一個節點，這樣
+才有機會對特定節點進行修改等操作
+
+---
+transition: slide-up
+level: 2
+---
+
+<!-- 由於 AST 是樹狀資料結構，所以我們需要寫一個「深度優先」的遍歷演算法，實現對 AST 中節點的存取。 -->
+### 第一步：寫一個 `dump` 函式
+用來找出目前 AST 中節點的資訊，如下面的程式碼所示：
+
+<div class="max-h-[400px] overflow-y-auto">
+
+```js {*}{lines:true}
+function dump(node, indent = 0) {
+  // 節點的類型
+  const type = node.type
+  
+
+  const desc = node.type === 'Root'
+    ? ''
+    : node.type === 'Element'
+      ? node.tag
+      : node.content
+
+  console.log(`${'-'.repeat(indent)}${type}: ${desc}`)
+
+  // 印出子節點
+  if (node.children) {
+    node.children.forEach(n => dump(n, indent + 2))
+  }
+}
+
+// 執行
+const ast = parse(`<div><p>Vue</p><p>Template</p></div>`)
+dump(ast)
+
+ 
+/*
+  執行結果
+  Root: 
+    --Element: div
+    ----Element: p
+    ------Text: Vue
+    ----Element: p
+    ------Text: Template
+*/
+```
+</div>
+
+<!-- 
+  節點的描述，如果是根節點，則沒有描述
+  如果是 Element 類型的節點，則使用 node.tag 作為節點的描述
+  如果是 Text 類型的節點，則使用 node.content 作為節點的描述 
+-->
+
+
+---
+transition: slide-up
+level: 2
+---
+### 第二步：實現對 AST 中節點的存取
+訪問節點的方式：從 AST 根節點開始，進行深度優先遍歷
+
+````md magic-move {lines: true}
+```js
+function traverseNode(ast) {
+  const currentNode = ast // ast 本身就是 Root 節點
+  // 如果有子節點，則遞迴呼叫 traverseNode
+  const children = currentNode.children
+  if (children) {
+    for (let i = 0; i < children.length; i++) {
+      traverseNode(children[i])
+    }
+  }
+}
+```
+
+```js
+function traverseNode(ast) {
+  // 當前節點，ast 本身就是 Root 節點
+  const currentNode = ast
+
+  // 對當前節點進行操作
+  if (currentNode.type === 'Element' && currentNode.tag === 'p') {
+    // 將所有 p 標籤轉換為 h1 標籤
+    currentNode.tag = 'h1'
+  }
+
+  // 如果有子節點，則遞迴地呼叫 traverseNode 函式進行遍歷
+  const children = currentNode.children
+  if (children) {
+    for (let i = 0; i < children.length; i++) {
+      traverseNode(children[i])
+    }
+  }
+}
+```
+````
+
+<!-- 有了 traverseNdoe 函數之後，我們即可實現對 AST 中節點的存取。例如，我們可以實現一個轉換功能，將 AST 中所有 p 標籤轉換為 h1 標籤 -->
 
 
 
+
+---
+transition: slide-up
+level: 2
+---
+
+<div class="max-h-[400px] overflow-y-auto">
+
+### 第三步：封装 transform 函数，用來對 AST進行轉換
+
+```js {*}{lines:true}
+function transform(ast) {
+  traverseNode(ast)
+  console.log(dump(ast))
+}
+
+const ast = parse(`<div><p>Vue</p><p>Template</p></div>`)
+transform(ast)
+
+/*
+  執行結果
+  Root: 
+    --Element: div
+    ----Element: h1
+    ------Text: Vue
+    ----Element: h1
+    ------Text: Template
+*/
+```
+</div>
+
+---
+transition: slide-up
+level: 2
+---
+
+潛在問題：隨著功能的不斷增加（進行更多的操作），traverseNode 可能會變得越來越「臃腫」
+
+<div v-click>能否對節點的操作和存取進行解耦呢？</div>
+
+<div v-click class="text-orange-500">使用回調函數的機制來實現解耦</div>
+
+<div v-click>
+
+```js {*}{lines:true}
+// 接收第二個參數 context，context 內容後面會談到
+function traverseNode(ast, context) {
+  const currentNode = ast
+
+  // context.nodeTransforms 是一個陣列，其中每一個元素都是一個函式
+  const transforms = context.nodeTransforms
+  for (let i = 0; i < transforms.length; i++) {
+    // 將當前節點 currentNode 和 context 都傳遞給 nodeTransforms 中註冊的回調函式
+    transforms[i](currentNode, context)
+  }
+
+  const children = currentNode.children
+  if (children) {
+    for (let i = 0; i < children.length; i++) {
+      traverseNode(children[i], context)
+    }
+  }
+}
+```
+</div>
+
+
+
+
+---
+transition: slide-up
+level: 2
+---
+
+<div class="max-h-[400px] overflow-y-auto">
+
+```js {*}{lines:true}
+function transform(ast) {
+  // 在 transform 函式內建立 context 物件
+  const context = {
+    nodeTransforms: [
+      transformElement, // transformElement 用來轉換標籤節點
+      transformText // transformText 用來轉換文本節點
+    ]
+  }
+  // 呼叫 traverseNode 完成轉換
+  traverseNode(ast, context)
+  // 印出 AST 資訊
+  console.log(dump(ast))
+}
+
+function transformElement(node) {
+  if (node.type === 'Element' && node.tag === 'p') {
+    node.tag = 'h1'
+  }
+}
+
+function transformText(node) {
+  if (node.type === 'Text') {
+    node.content = node.content.repeat(2)
+  }
+}
+```
+</div>
+
+<!-- 可以看到，解耦之後，節點操作封裝到了 transformElement 和 transformText 中。甚至可以編寫任意多個類似的轉換函數，只需要將它們註冊到 context.nodeTransforms 中即可。這樣就解決了功能增加所導致的 traverseNode 函數“臃腫”的問題 -->
+
+
+
+---
+transition: slide-up
+level: 2
+---
+
+## 15.4.2 轉換上下文與節點操作
+
+
+---
+transition: slide-up
+level: 2
+---
+
+<div class="max-h-[400px] overflow-y-auto">
+
+```js {*}{lines:true}
+
+```
+</div>
+
+
+---
+transition: slide-up
+level: 2
+---
+
+<div class="max-h-[400px] overflow-y-auto">
+
+```js {*}{lines:true}
+
+```
+</div>
+
+---
+transition: slide-up
+level: 2
+---
+
+<div class="max-h-[400px] overflow-y-auto">
+
+```js {*}{lines:true}
+
+```
+</div>
+
+---
+transition: slide-up
+level: 2
+---
+
+<div class="max-h-[400px] overflow-y-auto">
+
+```js {*}{lines:true}
+
+```
+</div>
+
+
+
+
+
+## 15.4.3 進入與退出
 
 ---
 layout: image-right
