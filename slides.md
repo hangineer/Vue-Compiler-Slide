@@ -61,7 +61,7 @@ transition: fade-out
   - **15.4.3 進入與退出**
 - **15.5 將模板 AST 轉為 JavaScript AST**
 - **15.6 程式碼生成**
-- **15.7 總結**
+- **總結**
 <br>
 <br>
 
@@ -95,8 +95,8 @@ graph LR
   style B fill:#fff,stroke:#000,stroke-width:3px,font-size:22px,font-weight:bold
 ```
 
-<!-- 
-語言 A 轉換成 語言 B 的過程 
+<!--
+語言 A 轉換成 語言 B 的過程
 編譯前端：僅負責分析原始碼
 編譯後端：通常負責生成目標程式碼
 -->
@@ -126,8 +126,8 @@ DSL: 專門為特定領域、特定任務」而設計的語言，設計 DSL 通�
 Vue.js 模板和 JSX 就是 DSL。而 Vue.js 模板編譯器的目標程式碼就是「渲染函數」
 
 
-<!-- 
-  在 Vue 的 SFC 中，你寫的內容並不是單純的 HTML 或 JavaScript，而是經過設計的特定語法 
+<!--
+  在 Vue 的 SFC 中，你寫的內容並不是單純的 HTML 或 JavaScript，而是經過設計的特定語法
   對 Vue.js 模板編譯器來說，原始碼是元件的模板，而目標程式碼是能夠在瀏覽器上執行的 JavaScript
 -->
 
@@ -214,7 +214,7 @@ const ast = {
 
 <!--
 AST 其實就是一個有層級結構的物件
-Root: 代表整個模板內容的容器 
+Root: 代表整個模板內容的容器
 -->
 
 
@@ -292,7 +292,7 @@ level: 2
 | **比喻** | 在字典裡查每一個單字的意思 | 分析句子的主詞、動詞、受詞結構 |
 | **例子** | `v-if="ok"` → `Identifier(v)` `Punctuator(-)` `Identifier(if)` ... | `Element(h1)` 搭配 `Directive(if)` 組成 AST 節點 |
 
-<!-- 
+<!--
 Parse 階段其實包含兩個子步驟：詞法分析和語法分析。這兩個步驟的分工很明確，我們用這張表來看一下。
 首先是「別名」：詞法分析也叫掃描（Scanning），語法分析也叫解析（Parsing）。所以有時候看到「Parse」這個詞，要注意它有兩種意思：狹義的是指「語法分析」這個步驟，廣義的是指整個「解析階段」，包含詞法和語法兩個步驟。
 
@@ -346,7 +346,7 @@ level: 2
 
 
 <!--
-  有了 JavaScript AST 後，就可以根據它產生渲染函數了，透過封裝 generate 函數來完成 
+  有了 JavaScript AST 後，就可以根據它產生渲染函數了，透過封裝 generate 函數來完成
   generate 函數會回傳字串，並儲存在 code 變數裡
 -->
 
@@ -539,63 +539,63 @@ level: 2
   <div :class="['absolute', 'w-20', 'h-20', 'rounded-full', 'border-3', 'flex', 'items-center', 'justify-center', 'text-xs', 'font-bold', 'transition-all', 'duration-500', $clicks >= 1 && $clicks <= 1 ? 'bg-blue-500 border-blue-600 text-white scale-110 shadow-lg' : 'bg-gray-100 border-gray-300 text-gray-600']" style="left: 200px; top: 10px;">
     <div class="text-center">1.初始<br/>狀態</div>
   </div>
-  
+
   <!-- 狀態 2: 標籤開始 -->
   <div :class="['absolute', 'w-20', 'h-20', 'rounded-full', 'border-3', 'flex', 'items-center', 'justify-center', 'text-xs', 'font-bold', 'transition-all', 'duration-500', $clicks >= 2 && $clicks <= 2 ? 'bg-green-500 border-green-600 text-white scale-110 shadow-lg' : 'bg-gray-100 border-gray-300 text-gray-600']" style="left: 50px; top: 120px;">
     <div class="text-center">2. 標籤<br/>開始</div>
   </div>
-  
+
   <!-- 狀態 3: 標籤名稱 -->
   <div :class="['absolute', 'w-20', 'h-20', 'rounded-full', 'border-3', 'flex', 'items-center', 'justify-center', 'text-xs', 'font-bold', 'transition-all', 'duration-500', $clicks >= 3 && $clicks <= 3 ? 'bg-purple-500 border-purple-600 text-white scale-110 shadow-lg' : 'bg-gray-100 border-gray-300 text-gray-600']" style="left: 50px; top: 250px;">
     <div class="text-center">3. 標籤<br/>名稱</div>
   </div>
-  
+
   <!-- 狀態 4: 文本 -->
   <div :class="['absolute', 'w-20', 'h-20', 'rounded-full', 'border-3', 'flex', 'items-center', 'justify-center', 'text-xs', 'font-bold', 'transition-all', 'duration-500', $clicks >= 4 && $clicks <= 4 ? 'bg-orange-500 border-orange-600 text-white scale-110 shadow-lg' : 'bg-gray-100 border-gray-300 text-gray-600']" style="left: 350px; top: 120px;">
     <div class="text-center">4. 文本<br/>狀態</div>
   </div>
-  
+
   <!-- 狀態 5: 結束標籤 -->
   <div :class="['absolute', 'w-20', 'h-20', 'rounded-full', 'border-3', 'flex', 'items-center', 'justify-center', 'text-xs', 'font-bold', 'transition-all', 'duration-500', $clicks >= 5 && $clicks <= 5 ? 'bg-red-500 border-red-600 text-white scale-110 shadow-lg' : 'bg-gray-100 border-gray-300 text-gray-600']" style="left: 350px; top: 250px;">
     <div class="text-center">5. 結束<br/>標籤</div>
   </div>
-  
+
   <!-- 狀態 6: 結束標籤名稱 -->
   <div :class="['absolute', 'w-20', 'h-20', 'rounded-full', 'border-3', 'flex', 'items-center', 'justify-center', 'text-xs', 'font-bold', 'transition-all', 'duration-500', $clicks >= 6 && $clicks <= 6 ? 'bg-pink-500 border-pink-600 text-white scale-110 shadow-lg' : 'bg-gray-100 border-gray-300 text-gray-600']" style="left: 200px; top: 330px;">
     <div class="text-center">6. 結束標籤<br/>名稱</div>
   </div>
-  
+
   <!-- 箭頭和標註 -->
   <!-- 1 -> 2: 遇到 < -->
   <div v-if="$clicks >= 2" class="absolute text-xs text-blue-500 font-bold" style="left: 180px; top: 70px;">
     讀 <code>&lt;</code>
   </div>
-  
+
   <!-- 2 -> 3: 遇到字母 -->
   <div v-if="$clicks >= 3" class="absolute text-xs text-green-500 font-bold" style="left: 40px; top: 190px;">
     讀 <code>p</code>
   </div>
-  
+
   <!-- 3 -> 1: 遇到 > -->
   <div v-if="$clicks >= 3" class="absolute text-xs text-purple-500 font-bold" style="left: 140px; top: 270px;">
     讀 <code>&gt;</code> 回初始
   </div>
-  
+
   <!-- 1 -> 4: 遇到文本 -->
   <div v-if="$clicks >= 4" class="absolute text-xs text-orange-500 font-bold" style="left: 280px; top: 150px;">
     讀 <code>V(Vue)</code>
   </div>
-  
+
   <!-- 4 -> 5: 遇到 < -->
   <div v-if="$clicks >= 5" class="absolute text-xs text-red-500 font-bold" style="left: 305px; top: 290px;">
     讀 <code>&lt;/</code>
   </div>
-  
+
   <!-- 5 -> 6: 遇到字母 -->
   <div v-if="$clicks >= 6" class="absolute text-xs text-pink-500 font-bold" style="left: 230px; top: 305px;">
     讀 <code>p</code>
   </div>
-  
+
   <!-- 6 -> 1: 遇到 > -->
 
   <!-- 當前處理字元提示 -->
@@ -703,10 +703,10 @@ function tokenize(str) {
   let currentState = State.initial
   const chars = []
   const tokens = []
-  
+
   while(str) {
     const char = str[0]
-    
+
     switch (currentState) {
       case State.initial:
         if (char === '<') {
@@ -718,7 +718,7 @@ function tokenize(str) {
           str = str.slice(1)
         }
         break
-        
+
       case State.tagOpen:
         if (isAlpha(char)) {
           currentState = State.tagName
@@ -729,7 +729,7 @@ function tokenize(str) {
           str = str.slice(1)
         }
         break
-        
+
       case State.tagName:
         if (isAlpha(char)) {
           chars.push(char)
@@ -744,7 +744,7 @@ function tokenize(str) {
           str = str.slice(1)
         }
         break
-        
+
       case State.text:
         if (isAlpha(char)) {
           chars.push(char)
@@ -759,7 +759,7 @@ function tokenize(str) {
           str = str.slice(1)
         }
         break
-        
+
       case State.tagEnd:
         if (isAlpha(char)) {
           currentState = State.tagEndName
@@ -767,7 +767,7 @@ function tokenize(str) {
           str = str.slice(1)
         }
         break
-        
+
       case State.tagEndName:
         if (isAlpha(char)) {
           chars.push(char)
@@ -784,7 +784,7 @@ function tokenize(str) {
         break
     }
   }
-  
+
   return tokens
 }
 ```
@@ -804,7 +804,7 @@ const tokens = tokenize(`<p>Vue</p>`)
 
 </div>
 
-<!-- 
+<!--
 
 首先，我們定義了狀態機的六個狀態：
 1. initial（初始狀態）
@@ -944,7 +944,7 @@ const ast = {
 ```
 </div>
 
-<!-- 
+<!--
   Vue 模板建 AST 較簡單：HTML 的標籤格式固定，標籤之間自然形成父子關係，所對應的 AST 與 HTML 結構相似，不需要處理太多複雜的語法規則
 -->
 
@@ -1055,10 +1055,10 @@ level: 2
 </div>
 
 
-<!-- 
+<!--
 棧頂的節點 = 父節點
 
-掃描過程中遇到的所有節點，都會作為目前棧頂節點的子節點，並加入到棧頂節點的 children 屬性下。 
+掃描過程中遇到的所有節點，都會作為目前棧頂節點的子節點，並加入到棧頂節點的 children 屬性下。
 -->
 
 ---
@@ -1096,7 +1096,7 @@ function parse(str) {
         parent.children.push(elementNode)
         elementStack.push(elementNode)
         break
-        
+
       case 'text':
         const textNode = {
           type: 'Text',
@@ -1104,12 +1104,12 @@ function parse(str) {
         }
         parent.children.push(textNode)
         break
-        
+
       case 'tagEnd':
         elementStack.pop()
         break
     }
-    
+
     tokens.shift()
   }
 
@@ -1248,7 +1248,7 @@ level: 2
 function traverseNode(ast) {
   const currentNode = ast
   const children = currentNode.children
-  
+
   if (children) {
     for (let i = 0; i < children.length; i++) {
       traverseNode(children[i])
@@ -1444,7 +1444,13 @@ level: 2
 
 ## 15.4.2 轉換上下文與節點操作
 可以把 Context 看作程式在某個範圍內的「全域變數」
-上小節提到的 context.nodeTransforms 陣列，這裡的 context 可以看作 AST 轉換函數過程中的上下文資料。所有 AST 轉換函數都可以透過 context 來共享資料
+
+上一節提到的 `context.nodeTransforms` 陣列
+
+可以把 context 可以看作 AST 轉換過程中的上下文資料，所有 AST 轉換函數都可以透過 context 來共享資料
+
+類似的例子像是 `React.createContext` 、 Vue 的 `provide/inject`
+
 
 ```js {*}{lines:true}
 function transform(ast) {
@@ -1463,23 +1469,21 @@ transition: slide-up
 level: 2
 ---
 
-context 包含當前狀態
+### 設置 context
 
-例如：\
+context 通常包含: \
+當前狀態\
 當前轉換的節點是哪一個?\
-當前轉換的節點的父節點是誰?\
+當前轉換節點的父節點是誰?\
 當前節點是父節點的第幾個子節點?
-<!-- 這些資訊 對於編寫複雜的轉換函數非常有用，如下面的程式碼所示: -->
+
 <div class="max-h-[400px] overflow-y-auto">
 
 ```js {*}{lines:true}
 function transform(ast) {
   const context = {
-    // 增加 currentNode，儲存當前正在轉換的節點
     currentNode: null,
-    // 增加 childIndex，儲存當前節點在父節點的 children 中的位置索引
     childIndex: 0,
-    // 增加 parent，用來儲存當前轉換節點的父節點
     parent: null,
     nodeTransforms: [
       transformElement,
@@ -1488,19 +1492,24 @@ function transform(ast) {
   }
 
   traverseNode(ast, context)
-  console.log(dump(ast))
+  dump(ast)
 }
 ```
 </div>
 
-
+<!--
+這些資訊 對於編寫複雜的轉換函數非常有用，如下面的程式碼所示:
+currentNode，儲存當前正在轉換的節點
+childIndex，儲存當前節點在父節點的 children 中的位置索引
+parent，用來儲存當前轉換節點的父節點
+-->
 
 ---
 transition: slide-up
 level: 2
 ---
 
-接著，透過 traverseNode 完成轉換
+接著，透過 traverseNode 完成上下文轉換
 <div class="max-h-[400px] overflow-y-auto">
 
 ```js {*}{lines:true}
@@ -1516,9 +1525,11 @@ function traverseNode(ast, context) {
   const children = context.currentNode.children
   if (children) {
     for (let i = 0; i < children.length; i++) {
-      // 將當前節點設定為父節點
+      // 1. 先將當前節點設定為父節點
       context.parent = context.currentNode
+      // 2. 設定位子索引
       context.childIndex = i
+      // 3. 轉換子節點
       traverseNode(children[i], context)
     }
   }
@@ -1529,7 +1540,7 @@ function traverseNode(ast, context) {
 <!-- 上面這段程式碼，其關鍵點在於，在遞歸地調用
 traverseNode 函數在進行子節點的轉換之前，必須先設定
 context.parent 和 context.childIndex 的值，這樣才能保證
-在接下來的遞歸轉換中，context 物件儲存的資訊是正確的 -->
+在接下來的遞歸轉換中，context 儲存的資訊是正確的 -->
 
 
 
@@ -1538,8 +1549,10 @@ transition: slide-up
 level: 2
 ---
 
-### 替換節點 `context.replaceNode`
-將所有文字節點替換成一個元素節點
+### 節點替換 `context.replaceNode`
+節點替換就是將 A 類型的節點替換成 B 類型
+
+例如：將所有文字節點替換成一個元素節點
 ```js {*}{lines:true}
 function transform(ast) {
   const context = {
@@ -1547,23 +1560,24 @@ function transform(ast) {
     parent: null,
     // 用於替換節點的函式，接收新節點作為參數
     replaceNode(node) {
-      // 為了替換節點，我們需要修改 AST
-      // 找到當前節點在父節點的 children 中的位置：context.childIndex
-      // 然後使用新節點替換即可
       context.parent.children[context.childIndex] = node
-      // 由於當前節點已經被新節點替換掉了，因此我們需要將 currentNode 更新為新節點
       context.currentNode = node
     },
     nodeTransforms: [
-      transformElement,
       transformText
     ]
   }
 
   traverseNode(ast, context)
-  console.log(dump(ast))
+  dump(ast)
 }
 ```
+
+<!--
+用於替換節點的函式，接收新節點作為參數
+找到當前節點在父節點的 children 中的位置：context.childIndex，然後使用新節點替換即可
+由於當前節點已經被新節點替換掉了，因此我們需要將 currentNode 更新為新節點
+-->
 
 
 ---
@@ -1574,6 +1588,7 @@ level: 2
 在 transformText 轉換函式中使用 replaceNode 對 AST 中的節點進行替換
 ```js {*}{lines:true}
 function transformText(node, context) {
+// 把「文本」替換成「span」
   if (node.type === 'Text') {
     context.replaceNode({
       type: 'Element',
@@ -1585,22 +1600,21 @@ function transformText(node, context) {
 
 節點轉換範例：[codepen](https://codepen.io/hangineer/pen/dPXegBz?editors=1111)
 
+
 ---
 transition: slide-up
 level: 2
 ---
 
 ### 刪除節點 `context.removeNode`
+例如：將所有文字節點移除
+<div class="max-h-[400px] overflow-y-auto">
 
 ```js {*}{lines:true}
 function transform(ast) {
   const context = {
     currentNode: null,
     parent: null,
-    replaceNode(node) {
-      context.currentNode = node
-      context.parent.children[context.childIndex] = node
-    },
     // 刪除當前節點
     removeNode() {
       if (context.parent) {
@@ -1609,7 +1623,6 @@ function transform(ast) {
       }
     },
     nodeTransforms: [
-      transformElement,
       transformText
     ]
   }
@@ -1617,7 +1630,15 @@ function transform(ast) {
   traverseNode(ast, context)
   dump(ast)
 }
+
+function transformText(node, context) {
+  if (node.type === 'Text') {
+   context.removeNode()
+  }
+}
 ```
+</div>
+
 
 ---
 transition: slide-up
@@ -1625,7 +1646,7 @@ level: 2
 ---
 
 由於節點被刪除了，所以後續的轉換函數將不再需要處理該節點。
-因此，需要對 `traverseNode` 函數做一些調整
+因此，需要對 `traverseNode` 函數做一些調整，如下：
 
 ```js {*}{lines:true}
 function traverseNode(ast, context) {
@@ -1634,8 +1655,8 @@ function traverseNode(ast, context) {
   const transforms = context.nodeTransforms
   for (let i = 0; i < transforms.length; i++) {
     transforms[i](context.currentNode, context)
-    // 由於任何轉換函式都可能移除當前節點，因此每個轉換函式執行完畢後，
-    // 都應該檢查當前節點是否已經被移除，如果被移除了，直接返回即可
+    // 由於任何轉換函式都可能移除當前節點，因此每個轉換函式執行完後，
+    // 都應該檢查當前節點是否已經被移除，如果被移除了，直接 retuen
     if (!context.currentNode) return
   }
 
@@ -1657,18 +1678,32 @@ function traverseNode(ast, context) {
 ---
 transition: slide-up
 level: 2
+layout: two-cols
+layoutClass: gap-5
 ---
 
 ## 15.4.3 進入與退出
-上面的轉換流程，是一種從根節點開始、順序執行的工作流程 (先序遍歷 top-down)
 
-<img class="mt-4" src="/assets/images/top-down.png" alt="" width="320" height="340" />
+::left::
+<img class="mt-2" src="/assets/images/top-down.png" alt="" width="420" height="340" />
 
+::right::
+<br />
+<p>目前提到的轉換流程，是一種從根節點開始、順序執行的工作流程 (先序遍歷 top-down)</p>
 <div v-click="1">如果需要根據子節點的情況來決定如何對目前節點進行轉換，就會遇到問題</div>
 
 <span v-click="2" style="font-size: 20px; color: orange;">簡單來說就是，沒辦法後序遍歷 (bottom-up)</span>
 
-<!-- 無法再回過頭重新處理父節點 -->
+<!--
+目前我們看到的轉換流程，是一種從根節點開始、順序執行的工作流程，也就是先序遍歷，也就是 top-down 的方式。
+
+從圖中可以看到，我們是從根節點開始，然後依序處理子節點。這種方式在大部分情況下是沒問題的，但是，如果我們需要根據子節點的情況來決定如何對目前節點進行轉換，就會遇到問題了。
+
+簡單來說就是，我們沒辦法進行後序遍歷，也就是 bottom-up 的方式。因為我們處理完父節點，就無法再回過頭重新處理父節點了。
+
+在實際的轉換場景中（像是：子節點是否要滿足某個條件，才決定父節點的結構），我們需要先處理完所有子節點，才能決定如何轉換父節點。所以需要一個更完善的流程來解決這個問題。
+-->
+
 
 ---
 transition: slide-up
@@ -1680,15 +1715,15 @@ layoutClass: gap-5
 ::left::
 
 更理想的流程會像下圖
-<img class="mt-4" src="/assets/images/bottom-up.png" alt="" width="400" height="420" />
+<img class="mt-4" src="/assets/images/bottom-up.png" alt="" width="440" height="420" />
 
 ::right::
-
+<br />
 <div v-click="1" class="mt-4">
 節點的存取分為兩個階段：
 
 1. 進入
-2. 退出
+2. 退出（新增）
 </div>
 
 <!-- 當轉換函數處於進入階段時，它會先進入父節點，再進入子節
@@ -1702,17 +1737,17 @@ transition: slide-up
 level: 2
 ---
 
-需要重新設計轉換函式，如下面 traverseNode
+需要重新設計轉換函式，如下面 `traverseNode`
 <div class="max-h-[400px] overflow-y-auto">
 
 ```js {*}{lines:true}
 function traverseNode(ast, context) {
   context.currentNode = ast
-  // 1. 增加退出階段的回調函式陣列
+  // 退出階段的回調函式陣列，用來緩存
   const exitFns = []
   const transforms = context.nodeTransforms
   for (let i = 0; i < transforms.length; i++) {
-    // 2. 轉換函式可以返回另外一個函式，該函式即作為退出階段的回調函式
+    // 轉換函式可以回傳另外一個函式，該函式即作為退出階段的回調函式
     const onExit = transforms[i](context.currentNode, context)
     if (onExit) {
       // 將退出階段的回調函式添加到 exitFns 陣列中
@@ -1730,8 +1765,8 @@ function traverseNode(ast, context) {
     }
   }
 
-  // 在節點處理的最後階段執行緩存到 exitFns 中的回調函式
-  // 要反序執行
+  // 執行那些緩存到 exitFns 中的回調函式
+  // 反序執行
   let i = exitFns.length
   while (i--) {
     exitFns[i]()
@@ -1751,6 +1786,8 @@ transition: slide-up
 level: 2
 ---
 
+可以將轉換邏輯編寫在退出階段的回呼函式裡
+
 ```js {*}{lines:true}
 function transformElement(node, context) {
   // 進入節點
@@ -1761,14 +1798,15 @@ function transformElement(node, context) {
   };
 }
 ```
+
 退出階段的回呼函數是反序執行的
 
-假設註冊了兩個轉換函數分別是 transformA 和 transformB
-* transformA 比 transformB 更早被註冊
-* transformA 的「進入階段」會先於 transformB 的「進入階段」
-* transformA 的「退出階段」將晚於 transformB 的「退出階段」
+假設有兩個轉換函式： `transformA` 和 `transformB`
+* `transformA` 比 `transformB` 更早被註冊
+* `transformA` 的「進入階段」會先於 `transformB` 的「進入階段」
+* `transformA` 的「退出階段」將晚於 `transformB` 的「退出階段」
 
-進入與退出範例：[codepen](https://codepen.io/hangineer/pen/yyJjQmM?editors=1012)
+進入與退出反序執行範例：[codepen](https://codepen.io/hangineer/pen/yyJjQmM?editors=1012)
 
 
 
@@ -1787,13 +1825,24 @@ level: 2
 transition: slide-up
 level: 2
 ---
-為什麼要將模板 AST 轉換為 JavaScript AST 呢？
+為什麼要將模板 AST 轉換為 JavaScript AST ？
 
 <img v-click class="mt-4" src="/assets/images/compile-model.png" alt="" width="500" height="420" />
+<p v-click>因為需要將模板編譯為渲染函數，以讓瀏覽器可以執行</p>
 
-<p v-click>因為需要將模板編譯為渲染函數</p>
 
-<!-- 因為 需要將模板編譯為渲染函數 -->
+<!--
+CHECK: 開 compiler-workflow.png 這張圖
+
+從圖中可以看到，整個編譯流程是：模板字串 → 模板 AST → JavaScript AST → 渲染函式。
+
+模板 AST 是用來描述模板結構的，它包含了標籤、屬性、指令等模板相關的資訊。但是，瀏覽器無法直接執行模板 AST，它只能執行 JavaScript
+
+所以，需要將模板 AST 轉換為 JavaScript AST。JavaScript AST 是 JavaScript 程式碼的抽象語法樹，它描述了 JavaScript 程式碼的結構。有了 JavaScript
+
+AST，我們就可以透過程式碼生成階段，將它轉換為可執行的 JavaScript 程式碼，也就是渲染函數。
+
+-->
 
 ---
 transition: slide-up
@@ -1815,13 +1864,14 @@ function render() {
 }
 ```
 
-這段渲染函式的 JavaScript 所對應的 JavaScript AST 就是
-轉換目標。JavaScript AST 是 JavaScript 程式碼的描述
+這段渲染函式所對應的 JavaScript AST 就是轉換目標
 
-<!-- 觀察上面這段渲染函數的程式，他是一個函式宣告語句
+JavaScript AST 是 JavaScript 程式碼的描述
+
+<!-- 觀察上面這段渲染函數的程式，他是一個函式宣告(大陸：聲明)語句
 所以，需要設計一些資料結構來描述 JavaScript 中的函式宣告語句 -->
 
-一個函式宣告語句，由以下幾部分組成：
+一個函式宣告語句（暫時不考慮箭頭函數、非同步等情況），由以下幾部分組成：
 1. id：函式名稱，是一個 Identifier
 2. params：函式的參數，是一個陣列
 3. body：函式體，可以包含多個語句，因此也是一個陣列
@@ -1833,17 +1883,16 @@ transition: slide-up
 level: 2
 ---
 
+## 用一個物件來描述 JavaScript AST
 
 ```js
 const FunctionDeclNode = {
-  type: 'FunctionDecl', // 代表該節點是函式宣告
-  // 函式的名稱是一個識別碼，識別碼本身也是一個節點
+  type: 'FunctionDecl',
   id: {
     type: 'Identifier',
-    name: 'render' // name 用來儲存識別碼的名稱，在這裡它就是渲染函式的名稱 render
+    name: 'render'
   },
-  params: [], // 參數，目前渲染函式還不需要參數，所以這裡是一個空陣列
-  // 渲染函式的函式體只有一個語句，即 return 語句
+  params: [], // 目前的渲染函式還不需要參數
   body: [
     {
       type: 'ReturnStatement',
@@ -1852,6 +1901,18 @@ const FunctionDeclNode = {
   ]
 };
 ```
+
+<!--
+這是一個用來描述函式宣告的 JavaScript AST 節點物件。
+
+首先，`type: 'FunctionDecl'` 表示這個節點是一個函式宣告節點。透過 type 屬性，我們可以區分不同類型的節點。
+
+接下來是 `id` 屬性，它用來描述函式的名稱。函式的名稱是一個識別碼，而識別碼本身也是一個節點，type 是 'Identifier'，name 屬性儲存識別碼的名稱。在這個例子中，name 是 'render'，也就是渲染函式的名稱。
+
+`params` 是一個陣列，用來儲存函式的參數。目前這個渲染函式還不需要參數，所以這裡是一個空陣列。
+
+最後是 `body` 屬性，它是一個陣列，用來儲存函式體中的語句。在這個例子中，渲染函式的函式體只有一個 return 語句。return 語句也是一個節點，type 為 'ReturnStatement'。目前 return 屬性的值是暫時留空，會在後續的講解中補全
+-->
 
 
 ---
@@ -1867,18 +1928,20 @@ function render() {
   ])
 }
 ```
-
+<br />
+<br />
 <div v-click="1" v-if="$clicks < 2">
-渲染函式的回傳值是虛擬 DOM 節點，可以使用 CallExpression 類型的節點來描述函式呼叫語句
+渲染函式的回傳值是一個 h 函式的調用(虛擬 DOM 節點)，可以使用 CallExpression 類型來描述函式呼叫語句
+
 ```js {*}{lines:true}
 const CallExp = {
   type: 'CallExpression',
-  // 被呼叫函式的名稱，它是一個識別碼
+  // 被呼叫函式的名稱，是一個識別碼
   callee: {
     type: 'Identifier',
     name: 'h'
   },
-  // 參數
+  // 參數（暫時為空，後續會補全）
   arguments: []
 };
 ```
@@ -1908,15 +1971,16 @@ transition: slide-up
 level: 2
 ---
 
-合併起來的結果
+合併起來的 JavaScript AST，對渲染函式的完整描述
 
 <div class="max-h-[400px] overflow-y-auto">
 
 ```js {*}{lines:true}
+// 此 render 函式內容有小改
 function render() {
   return h('div', [
-    h('p', 'Vue'),
-    h('p', 'Template')
+    h('h1', { id: dynamicId }, 'Vue Template' ),
+    h('p', 'hello world')
   ])
 }
 
@@ -1950,21 +2014,35 @@ const FunctionDeclNode = {
                 type: 'CallExpression',
                 callee: { type: 'Identifier', name: 'h' },
                 arguments: [
-                  // 該 h 函式呼叫的第一個參數是字串字面量
-                  { type: 'Identifier', value: 'p' }, // 註：此處原意應為標籤名
-                  { type: 'StringLiteral', value: 'p' },
-                  // 第二個參數也是一個字串字面量
-                  { type: 'StringLiteral', value: 'Vue' }
+                  // 第一個參數是字串字面量 'h1'
+                  {
+                    type: 'StringLiteral',
+                    value: 'h1'
+                  },
+                  // 第二個參數是一個物件表達式
+                  {
+                    type: 'ObjectExpression',
+                    properties: [
+                      {
+                        type: 'Property',
+                        key: { type: 'Identifier', name: 'id' },
+                        value: { type: 'Identifier', name: 'dynamicId' }
+                      }
+                    ]
+                  },
+                  // 第三個參數是字串字面量 'Vue Template'
+                  {
+                    type: 'StringLiteral',
+                    value: 'Vue Template'
+                  }
                 ]
               },
-              // 陣列的第二個元素也是 h 函式的呼叫
+               // 陣列的第二個元素也是 h 函式的呼叫
               {
                 type: 'CallExpression',
                 callee: { type: 'Identifier', name: 'h' },
                 arguments: [
-                  // 該 h 函式呼叫的第一個參數是字串字面量
                   { type: 'StringLiteral', value: 'p' },
-                  // 第二個參數也是一個字串字面量
                   { type: 'StringLiteral', value: 'Template' }
                 ]
               }
@@ -1983,10 +2061,12 @@ transition: slide-up
 level: 2
 ---
 
-接下來要寫轉換函式，將模板 AST 轉換為上一頁的 JavaScript AST
+接下來要寫轉換函式，目的是將模板 AST 轉換為上一頁的 JavaScript AST
 <div class="max-h-[400px] overflow-y-auto">
 
 ```js {*}{lines:true}
+// 📌 1. 先建立 JavaScript AST 節點的函式
+
 // 用來建立 StringLiteral 節點
 function createStringLiteral(value) {
   return {
@@ -2020,9 +2100,10 @@ function createCallExpression(callee, arguments) {
   };
 }
 
-// 轉換文本節點
+// 📌 2. 建立處理文本和標籤的「轉換函式」，把模板 AST 轉換為 JavaScript AST
+
+// 轉換函式一：轉換文本節點
 function transformText(node) {
-  // 如果不是文本節點，則什麼都不做
   if (node.type !== 'Text') {
     return;
   }
@@ -2033,50 +2114,37 @@ function transformText(node) {
   node.jsNode = createStringLiteral(node.content);
 }
 
-// 轉換標籤節點
+// 轉換函式二：標籤節點
 function transformElement(node) {
-  // 將轉換程式碼編寫在退出階段的回調函式中，
-  // 這樣可以保證該標籤節點的子節點全部被處理完畢
   return () => {
-    // 如果被轉換的節點不是元素節點，則什麼都不做
     if (node.type !== 'Element') {
       return;
     }
 
-    // 1. 建立 h 函式呼叫語句
-    // h 函式呼叫的第一個參數是標籤名稱，因此我們以 node.tag 來建立一個字串字面量節點
-    // 作為第一個參數
+    // 建立 h 函式呼叫語句，第一個參數是標籤名稱，因此以 node.tag 來建立一個字串字面量節點
     const callExp = createCallExpression('h', [
       createStringLiteral(node.tag)
     ]);
 
-    // 2. 處理 h 函式呼叫的參數
+    // 處理 h 函式呼叫的參數
     node.children.length === 1
-      // 如果當前標籤節點只有一個子節點，則直接使用子節點的 jsNode 作為參數
       ? callExp.arguments.push(node.children[0].jsNode)
-      // 如果當前標籤節點有多個子節點，則建立一個 ArrayExpression 節點作為參數
-      : callExp.arguments.push(
-          // 陣列的每個元素都是子節點的 jsNode
-          createArrayExpression(node.children.map(c => c.jsNode))
-        );
+      : callExp.arguments.push(createArrayExpression(node.children.map(c => c.jsNode))); // 陣列的每個元素都是子節點的 jsNode
 
-    // 3. 將當前標籤節點對應的 JavaScript AST 添加到 jsNode 屬性下
     node.jsNode = callExp;
   };
 }
 
+// 📌 3. 把用來描述 render 函式本身的宣告語句節點轉換為 JavaScript AST
+
 // 轉換 Root 根節點
 function transformRoot(node) {
-  // 將邏輯編寫在退出階段的回調函式中，保證子節點全部被處理完畢
   return () => {
-    // 如果不是根節點，則什麼都不做
     if (node.type !== 'Root') {
       return;
     }
-    // node 是根節點，根節點的第一個子節點就是模板的根節點，
-    // 當然，這裡我們暫時不考慮模板存在多個根節點的情況
     const vnodeJSAST = node.children[0].jsNode;
-    // 建立 render 函式的宣告語句節點，將 vnodeJSAST 作為 render 函式體的回傳語句
+    // 建立 render 函式的宣告語句節點，將 vnodeJSAST 作為 render 函式體的回傳
     node.jsNode = {
       type: 'FunctionDecl',
       id: { type: 'Identifier', name: 'render' },
@@ -2094,9 +2162,38 @@ function transformRoot(node) {
 
 </div>
 
-<!-- 模板 AST 將轉換為對應的 JavaScript
-AST，並且可以透過根節點的 node.jsNode 來存取轉換後的
-JavaScript AST -->
+<!--
+這段程式碼展示了如何將模板 AST 轉換為 JavaScript AST 的完整實作。
+
+首先，我們定義了幾個輔助函式來建立不同類型的 JavaScript AST 節點：
+- `createStringLiteral`：用來建立字串字面量節點
+- `createIdentifier`：用來建立識別碼節點
+- `createArrayExpression`：用來建立陣列表達式節點
+- `createCallExpression`：用來建立函式呼叫表達式節點，它會自動將 callee 轉換為 Identifier 節點
+
+接下來是三個轉換函式：
+
+1. `transformText`：轉換文本節點
+   - 如果不是文本節點，則什麼都不做
+   - 文本節點對應的 JavaScript AST 節點其實就是一個字串字面量
+   - 因此只需要使用 node.content 建立一個 StringLiteral 類型的節點即可
+   - 最後將文本節點對應的 JavaScript AST 節點添加到 node.jsNode 屬性下
+
+2. `transformElement`：轉換標籤節點
+   - 將轉換程式碼編寫在退出階段的回調函式中，這樣可以保證該標籤節點的子節點全部被處理完畢
+   - 如果被轉換的節點不是元素節點，則什麼都不做
+   - 第一步：建立 h 函式呼叫語句。h 函式呼叫的第一個參數是標籤名稱，因此我們以 node.tag 來建立一個字串字面量節點作為第一個參數
+   - 第二步：處理 h 函式呼叫的參數。如果當前標籤節點只有一個子節點，則直接使用子節點的 jsNode 作為參數；如果有多個子節點，則建立一個 ArrayExpression 節點作為參數，陣列的每個元素都是子節點的 jsNode
+   - 第三步：將當前標籤節點對應的 JavaScript AST 添加到 jsNode 屬性下
+
+3. `transformRoot`：轉換 Root 根節點
+   - 將邏輯編寫在退出階段的回調函式中，保證子節點全部被處理完畢
+   - 如果不是根節點，則什麼都不做
+   - node 是根節點，根節點的第一個子節點就是模板的根節點（這裡暫時不考慮模板存在多個根節點的情況）
+   - 建立 render 函式的宣告語句節點，將 vnodeJSAST 作為 render 函式體的回傳語句
+
+模板 AST 將轉換為對應的 JavaScript AST，並且可以透過根節點的 node.jsNode 來存取轉換後的 JavaScript AST。
+-->
 
 
 
@@ -2108,7 +2205,7 @@ level: 2
 # 15.6 程式碼生成
 學習重點：
 - 根據轉換後得到的 JavaScript AST 產生渲染函式程式碼
-- 實作 generate 函數來完成程式碼生成
+- 實作 generate 函式來完成程式碼生成
 
 
 
@@ -2119,59 +2216,65 @@ level: 2
 
 程式碼生成是編譯器的「最後一步」，與 AST 轉換一樣，程式碼產生成也需要 context
 
+<div class="max-h-[400px] overflow-y-auto">
+
 ```js {*}{lines:true}
 function compile(template) {
-  // 模板 AST
-  const ast = parse(template);
-
-  // 將模板 AST 轉換為 JavaScript AST
-  transform(ast);
-
-  // 程式碼生成
-  const code = generate(ast.jsNode);
+  const ast = parse(template);        // 模板 AST
+  transform(ast);                     // 將模板 AST 轉換為 JavaScript AST
+  const code = generate(ast.jsNode);  // 程式碼生成
 
   return code;
 }
-```
 
-```js {*}{lines:true}
 function generate(node) {
   const context = {
-    // 儲存最終生成的渲染函式程式碼
     code: '',
-    // 在生成程式碼時，透過呼叫 push 函式完成程式碼的拼接
     push(code) {
       context.code += code;
     },
-    // 目前縮排的層級，初始值為 0，即沒有縮排
     currentIndent: 0,
-
-    // 該函式用來換行，即在程式碼字串的後面追加 \n 字元，
-    // 另外，換行時應該保留縮排，所以我們還要追加 currentIndent * 2 個空格字元
     newline() {
       context.code += '\n' + ` `.repeat(context.currentIndent * 2);
     },
-
-    // 用來縮排，即讓 currentIndent 自增後，呼叫換行函式
     indent() {
       context.currentIndent++;
       context.newline();
     },
-
-    // 取消縮排，即讓 currentIndent 自減後，呼叫換行函式
     deIndent() {
       context.currentIndent--;
       context.newline();
     }
   };
 
-  // 呼叫 genNode 函式完成程式碼生成的工作
   genNode(node, context);
 
-  // 回傳渲染函式程式碼
   return context.code;
 }
 ```
+</div>
+
+<!--
+`generate` 函式是程式碼生成的核心，它接收一個 JavaScript AST 節點，然後生成對應的渲染函式程式碼。
+
+函式內部建立了一個 `context` 物件，用來管理程式碼生成的過程。這個 context 物件包含了幾個重要的屬性和方法：
+
+1. `code`：用來儲存最終生成的渲染函式程式碼，初始值為空字串。
+
+2. `push(code)`：在生成程式碼時，透過呼叫這個函式來完成程式碼的拼接。它會將傳入的程式碼字串追加到 context.code 中。
+
+3. `currentIndent`：用來追蹤目前縮排的層級，初始值為 0，表示沒有縮排。這個值會隨著程式碼的嵌套層級而變化。
+
+4. `newline()`：用來換行，即在程式碼字串的後面追加換行字元 `\n`。另外，換行時應該保留縮排，所以我們還要追加 `currentIndent * 2` 個空格字元，這樣生成的程式碼才會有正確的縮排格式。
+
+5. `indent()`：用來增加縮排，即讓 `currentIndent` 自增後，呼叫換行函式。這通常用在進入一個新的程式碼區塊時，比如函式體、陣列元素等。
+
+6. `deIndent()`：用來減少縮排，即讓 `currentIndent` 自減後，呼叫換行函式。這通常用在退出一個程式碼區塊時。
+
+建立好 context 物件後，函式會呼叫 `genNode` 函式來完成實際的程式碼生成工作。`genNode` 函式會根據不同的節點類型，遞迴地生成對應的程式碼，並使用 context 中的方法來拼接程式碼。
+
+最後，函式回傳 `context.code`，這就是最終生成的渲染函式程式碼字串。
+-->
 
 
 
@@ -2180,7 +2283,7 @@ function generate(node) {
 transition: slide-up
 level: 2
 ---
-程式碼生成的原理只需要搭配各種類型的 JavaScript AST 節點，並呼叫對應的生成函式就好
+程式碼生成的原理只需要搭配各種類型的 JavaScript AST 節點，並呼叫對應的生成函式就好，本質上是字串拼接
 
 <div class="max-h-[400px] overflow-y-auto">
 
@@ -2209,7 +2312,7 @@ function genFunctionDecl(node, context) {
   // 從 context 物件中取出工具函式
   const { push, indent, deIndent } = context;
 
-  // node.id 是一個識別碼，用來描述函式的名稱，即 node.id.name
+  // node.id 是一個識別碼，用來描述函式的名稱
   push(`function ${node.id.name} `);
   push(`(`);
 
@@ -2219,13 +2322,11 @@ function genFunctionDecl(node, context) {
   push(`) `);
   push(`{`);
 
-  // 縮排
   indent();
 
-  // 為函式體生成程式碼，這裡遞迴地呼叫了 genNode 函式
+  // 呼叫 genNode 為函式體生成程式碼
   node.body.forEach(n => genNode(n, context));
 
-  // 取消縮排
   deIndent();
 
   push(`}`);
@@ -2235,49 +2336,31 @@ function genNodeList(nodes, context) {
   const { push } = context;
   for (let i = 0; i < nodes.length; i++) {
     const node = nodes[i];
-    // 遞迴呼叫 genNode 生成單個節點的程式碼
     genNode(node, context);
-    // 如果不是最後一個節點，則補充逗號和空格
+
     if (i < nodes.length - 1) {
-      push(', ');
+      push(', '); // 如果不是最後一個節點，則補充逗號和空格
     }
   }
 }
 
 function genArrayExpression(node, context) {
   const { push } = context;
-  // 追加方括號
   push('[');
-  // 呼叫 genNodeList 為陣列元素生成程式碼
-  genNodeList(node.elements, context);
-  // 補全方括號
+  genNodeList(node.elements, context); // 呼叫 genNodeList 為陣列元素生成程式碼
   push(']');
 }
 
 function genReturnStatement(node, context) {
   const { push } = context;
-  // 追加 return 關鍵字和空格
   push(`return `);
-  // 呼叫 genNode 函式遞迴地生成回傳值程式碼
   genNode(node.return, context);
 }
 
 function genStringLiteral(node, context) {
   const { push } = context;
-  // 對於字串字面量，只需要追加與 node.value 對應的字串即可
+  // 字串字面量，只需要 push 與 node.value 對應的字串
   push(`'${node.value}'`);
-}
-
-function genCallExpression(node, context) {
-  const { push } = context;
-  // 取得被呼叫函式名稱和參數列表
-  const { callee, arguments: args } = node;
-  // 生成函式呼叫程式碼
-  push(`${callee.name}(`);
-  // 呼叫 genNodeList 生成參數程式碼
-  genNodeList(args, context);
-  // 補全括號
-  push(`)`);
 }
 
 function genCallExpression(node, context) {
@@ -2329,6 +2412,38 @@ level: 2
 
 # 總結
 
+<div class="max-h-[500px] overflow-y-auto py-10">
+
+## 15.1 模板 DSL 的編譯器
+- **編譯器**：將模板 DSL 轉換為 JavaScript 渲染函數的橋樑
+- **編譯流程**：模板字串 → 模板 AST → JavaScript AST → 渲染函數
+- **AST**：抽象語法樹，以樹狀結構描述程式碼的語法結構
+
+## 15.2 Parser 的實作原理與狀態機
+- **有限狀態自動機**：用於詞法分析，識別不同的 token（標籤、文本、指令等）
+- **狀態轉換**：根據輸入字元在不同狀態間轉換，完成 token 掃描
+
+## 15.3 構造 AST
+- **語法分析**：將 token 序列轉換為具有層級結構的 AST
+- **堆疊機制**：使用 elementStack 追蹤節點的嵌套關係
+
+## 15.4 AST 的轉換與插件化架構
+- **節點訪問**：深度優先遍歷（DFS）訪問所有節點
+- **轉換上下文**：提供 `replaceNode`、`removeNode` 等節點操作介面
+- **進入與退出**：支援後序遍歷（bottom-up），解決需要根據子節點決定父節點轉換的問題
+
+## 15.5 將模板 AST 轉為 JavaScript AST
+- **轉換目的**：瀏覽器只能執行 JavaScript，需要將模板結構轉換為 JavaScript 結構
+- **轉換函式**：`transformText`、`transformElement`、`transformRoot`
+- **JavaScript AST 節點**：FunctionDecl、CallExpression、StringLiteral、ArrayExpression 等
+
+## 15.6 程式碼生成
+- **生成原理**：根據 JavaScript AST 節點類型，呼叫對應的生成函式進行字串拼接
+- **Context 管理**：使用 `code`、`push`、`indent`、`deIndent` 等方法管理程式碼生成過程
+- **最終結果**：可執行的 JavaScript 渲染函數程式碼
+
+</div>
+
 
 
 ---
@@ -2340,37 +2455,37 @@ level: 2
 
 <div class="grid grid-cols-2 gap-2 text-sm mt-4">
 
-<div v-click class="p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg">
+<div class="p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg">
 <div class="font-bold text-blue-400 mb-2">Q1. 編譯器基礎概念</div>
-<div>請簡單說明 DSL（領域特定語言）與 GPL（通用程式語言）的差異，並解釋為什麼 Vue 模板不需要圖靈完備？</div>
+<div>DSL（領域特定語言）本身不要求圖靈完備，而 Vue 模板是一個 DSL，為什麼它不需要圖靈完備？</div>
 </div>
 
-<div v-click class="p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
+<div class="p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
 <div class="font-bold text-green-400 mb-2">Q2. 有限狀態自動機</div>
-<div>在解析 <code>&lt;div&gt;Vue&lt;/div&gt;</code> 時，狀態機會經過哪些狀態？請依序列出並說明每個狀態的作用。</div>
+<div>在解析 <code>&lt;div&gt;Vue&lt;/div&gt;</code> 時，狀態機 會經過哪些狀態？</div>
 </div>
 
-<div v-click class="p-4 bg-purple-500/10 border border-purple-500/30 rounded-lg">
+<div class="p-4 bg-purple-500/10 border border-purple-500/30 rounded-lg">
 <div class="font-bold text-purple-400 mb-2">Q3. AST 建構過程</div>
-<div>解釋 <code>elementStack</code> 在建構 AST 時的作用，並說明遇到「開始標籤」與「結束標籤」時，堆疊會如何變化？</div>
+<div>解釋 <code>elementStack</code> 在建構 AST 時的用途，並說明遇到「開始標籤」與「結束標籤」時，堆疊會如何變化？</div>
 </div>
 
-<div v-click class="p-4 bg-orange-500/10 border border-orange-500/30 rounded-lg">
+<div class="p-4 bg-orange-500/10 border border-orange-500/30 rounded-lg">
 <div class="font-bold text-orange-400 mb-2">Q4. 節點訪問與轉換</div>
-<div>為什麼需要將「節點操作」與「節點訪問」解耦？使用回調函數機制有什麼優勢？</div>
+<div>為什麼需要將「節點操作」與「節點訪問」解耦？使用回調函式機制來解耦有什麼好處嗎？</div>
 </div>
 
-<div v-click class="p-4 bg-cyan-500/10 border border-cyan-500/30 rounded-lg">
+<div class="p-4 bg-cyan-500/10 border border-cyan-500/30 rounded-lg">
 <div class="font-bold text-cyan-400 mb-2">Q5. 進入與退出時機</div>
-<div>在深度優先遍歷 AST 時，為什麼需要區分「進入節點」與「退出節點」兩個時機？請舉例說明應用場景。</div>
+<div>在遍歷 AST 節點時，為什麼需要區分「進入節點」與「退出節點」兩個時機？</div>
 </div>
 
-<div v-click class="p-4 bg-pink-500/10 border border-pink-500/30 rounded-lg">
+<div class="p-4 bg-pink-500/10 border border-pink-500/30 rounded-lg">
 <div class="font-bold text-pink-400 mb-2">Q6. 轉換上下文</div>
 <div>轉換上下文（context）物件通常會包含哪些資訊？為什麼需要在轉換過程中傳遞上下文？</div>
 </div>
 
-<div v-click class="p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
+<div class="p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
 <div class="font-bold text-yellow-400 mb-2">Q7. 整合應用</div>
 <div>請描述 Vue 模板 <code>&lt;p v-if="ok"&gt;Hello&lt;/p&gt;</code> 從模板字串到最終 render 函數的完整編譯流程（parse → transform → generate）。</div>
 </div>
@@ -2384,15 +2499,11 @@ level: 2
 
 # 答案 Q1：編譯器基礎概念
 
-問題：請簡單說明 DSL（領域特定語言）與 GPL（通用程式語言）的差異，並解釋為什麼 Vue 模板不需要圖靈完備？
+問題：DSL（領域特定語言）本身不要求圖靈完備，而 Vue 模板是一個 DSL，為什麼它不需要圖靈完備？
 
 <div class="grid grid-cols-2 gap-6 mt-4">
 <div>
 
-**GPL（通用程式語言）**
-- 圖靈完備，可以表達任意可計算的演算法
-- 例如：JavaScript、Python、C、Java
-- 可以用來實作 DSL
 
 **DSL（領域特定語言）**
 - 不要求圖靈完備
@@ -2406,7 +2517,7 @@ level: 2
 - Vue 模板的目的是描述「UI 結構、資料綁定、指令」等
 - 不需要表達複雜的演算法邏輯
 - 模板語法固定、結構簡單，更容易解析和優化
-- 複雜邏輯應該寫在 JavaScript 中，模板只負責聲明式的 UI 描述
+- 複雜邏輯應該寫在 JavaScript 中，模板只負責 UI
 
 </div>
 </div>
@@ -2419,7 +2530,7 @@ level: 2
 
 # 答案 Q2：有限狀態自動機
 
-問題： 在解析 `<div>Vue</div>` 時，狀態機會經過哪些狀態？請依序列出並說明每個狀態的作用。
+問題： 在解析 `<div>Vue</div>` 時，狀態機 會經過哪些狀態？
 
 
 <div class="grid grid-cols-2 gap-6 mt-4">
@@ -2444,22 +2555,8 @@ level: 2
 </div>
 <div>
 
-**各狀態作用：**
-
-<v-clicks>
-
-- **initial**：初始/待機狀態，等待下一個 token
-- **tagOpen**：識別到 `<`，準備讀取標籤
-- **tagName**：讀取開始標籤的名稱
-- **text**：讀取文本內容
-- **tagEnd**：識別到 `</`，準備讀取結束標籤
-- **tagEndName**：讀取結束標籤的名稱
-
-</v-clicks>
-
 </div>
 </div>
-
 
 
 ---
@@ -2469,35 +2566,30 @@ level: 2
 
 # 答案 Q3：AST 建構過程
 
-問題： 解釋 `elementStack` 在建構 AST 時的作用，並說明遇到「開始標籤」與「結束標籤」時，堆疊會如何變化？
+問題： 解釋 `elementStack` 在建構 AST 時的用途，並說明遇到「開始標籤」與「結束標籤」時，堆疊會如何變化？
 
 <div class="text-sm">
 <div class="mt-2">
 
-**elementStack 的作用：**
-- 維護元素間的父子關係
+**elementStack 的用途**：維護元素間的父子關係
 
 <div class="grid grid-cols-2 gap-2 mt-2">
+  <div>
+
+  **遇到開始標籤（如 `<div>`）：**
+  - 建立一個新的 Element 類型 AST 節點
+  - 將該節點 **push** 進堆疊
+  - 該節點成為新的棧頂（當前父節點）
+
+  **遇到結束標籤（如 `</div>`）：**
+  - 將當前棧頂節點 **pop** 出堆疊
+  - 表示該元素的子節點已全部處理完畢
+  - 棧頂回到上一層的父節點
+
+  </div>
 <div>
 
-<v-clicks>
-
-**遇到開始標籤（如 `<div>`）：**
-- 創建一個新的 Element 類型 AST 節點
-- 將該節點 **push** 進堆疊
-- 該節點成為新的棧頂（當前父節點）
-
-**遇到結束標籤（如 `</div>`）：**
-- 將當前棧頂節點 **pop** 出堆疊
-- 表示該元素的子節點已全部處理完畢
-- 棧頂回到上一層的父節點
-
-</v-clicks>
-
-</div>
-<div>
-
-**範例：** `<div><p>Vue</p></div>`
+範例：`<div><p>Vue</p></div>`
 
 ```text
 初始：[Root]
@@ -2510,9 +2602,7 @@ Vue：[Root, div, p]（不改變堆疊，Vue 加入 p 的 children）
 
 </div>
 </div>
-
 </div>
-
 </div>
 
 
@@ -2525,44 +2615,35 @@ level: 2
 
 # 答案 Q4：節點訪問與轉換
 
-問題：為什麼需要將「節點操作」與「節點訪問」解耦？使用回調函數機制有什麼優勢？
-<div class="text-sm">
+問題：為什麼需要將「節點操作」與「節點訪問」解耦？使用回調函式機制來解耦有什麼好處嗎？
+<div>
 
 
 <div class="grid grid-cols-2 gap-4 mt-3">
 <div>
 
 **需要解耦的原因：**
-- 如果將所有操作寫在 `traverseNode` 函數中，隨著功能增加會變得越來越臃腫，導致難以維護和擴展，違反單一職責原則
+<div class="p-4 bg-blue-500/10 border-l-4 border-blue-500 rounded-r-lg my-3 shadow-sm text-sm">
+如果將所有操作寫在 traverseNode 函式中，隨著功能增加會變得越來越臃腫，導致難以維護和擴展，違反單一職責原則
+</div>
 
 **使用回調函數機制的優勢：**
 
-<v-clicks>
+1. 關注點分離：
+- `traverseNode`：負責「遍歷」（深度優先）
+- 回調函式：負責「操作」（轉換邏輯）
 
-**1. 關注點分離：**
-- `traverseNode`：只負責「如何遍歷」（深度優先）
-- 回調函數：負責「做什麼操作」（轉換邏輯）
+<hr class="m-5" />
 
-**2. 可擴展性：**
-- 可以輕鬆添加新的轉換邏輯（新的回調函數）
-- 不需要修改遍歷邏輯
+2. 可擴展和維護性：
+- 可以加入新的轉換函式，不需要修改遍歷邏輯，形成轉換插件系統（plugin architecture）
+</div>
 
-</v-clicks>
-
+<div class="mt-[180px]">
+3. 可測試性：
+- 遍歷邏輯和轉換邏輯可以分別測試
 </div>
 <div>
-
-<v-clicks>
-
-**3. 可組合性：**
-- 可以註冊多個轉換函數
-- 形成轉換插件系統（plugin architecture）
-
-**4. 可測試性：**
-- 遍歷邏輯和轉換邏輯可以分別測試
-- 更容易進行單元測試
-
-</v-clicks>
 </div>
 </div>
 </div>
@@ -2575,15 +2656,16 @@ level: 2
 
 # 答案 Q5：進入與退出時機
 
-問題： 在深度優先遍歷 AST 時，為什麼需要區分「進入節點」與「退出節點」兩個時機？
+問題： 在遍歷 AST 節點時，為什麼需要區分「進入節點」與「退出節點」兩個時機？
+
+<br />
 
 **為什麼需要區分兩個時機？**
 
 因為在 AST 轉換過程中，有些操作需要先處理父節點（自上而下），有些操作則需要先處理子節點（自下而上），如果只有一個時機，就無法靈活處理這兩種不同的轉換需求。
-- **自上而下**：父節點的資訊會影響子節點的處理（如：作用域、深度、上下文）
-- **自下而上**：子節點的結果會影響父節點的判斷（如：靜態分析、型別推斷）
 
-
+- **進入階段**：先進入父節點，再進入子節點。可以在進入階段處理父節點的資訊，為子節點的處理上提供上下文
+- **退出階段**：先退出子節點，再退出父節點。可以在退出階段根據子節點的處理結果來決定父節點的轉換
 
 
 
@@ -2600,8 +2682,6 @@ level: 2
 
 **上下文通常包含的資訊：**
 
-<v-clicks>
-
 **1. 當前節點資訊：**
 - `currentNode`：當前正在處理的節點
 - `parent`：父節點引用
@@ -2610,11 +2690,8 @@ level: 2
 **2. 轉換配置：**
 - `nodeTransforms`：節點轉換函數陣列
 
-**3. 操作函式：**
-- `replaceNode(node)`：替換當前節點
-- `removeNode()`：移除當前節點
+**3. 操作函式：** 例如 `replaceNode(node)`、`removeNode()`
 
-</v-clicks>
 
 </div>
 <div>
@@ -2622,11 +2699,8 @@ level: 2
 **為什麼需要傳遞上下文：**
 
 <div class="p-3 bg-purple-500/10 border-2 border-purple-500/30 rounded-lg">
-<v-click>
 
-因為在 AST 轉換過程中，**不同的轉換函數之間需要共享狀態和資料**（如當前節點、父節點、輔助函式等）。透過上下文物件，也可以**提供統一的節點操作介面**（如 `replaceNode`、`removeNode`），確保所有轉換的一致性
-
-</v-click>
+因為在 AST 轉換過程中，**不同的轉換函數之間需要共享狀態和資料**（如當前節點、父節點、輔助函式等）。透過上下文物件，也可以**提供統一的節點操作介面**（如 `replaceNode`、`removeNode`），確保轉換的一致性
 </div>
 </div>
 </div>
